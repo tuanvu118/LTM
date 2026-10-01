@@ -54,6 +54,18 @@ public class Main {
 
         return StandardCharsets.UTF_8.decode(payloadBuffer).toString();
     }
+    public static String getString(String json, String key) {
+        String start = "\"" + key + "\":\"";
+        int a = json.indexOf(start) + start.length();
+        int b = json.indexOf("\"", a);
+        return json.substring(a, b);
+    }
+
+    public static boolean getBoolean(String json, String key) {
+        String start = "\"" + key + "\":";
+        int a = json.indexOf(start) + start.length();
+        return json.startsWith("true", a);
+    }
 
     public static void main(String[] args) throws Exception {
 
@@ -73,36 +85,11 @@ public class Main {
 
         System.out.println("JSON: " + json);
 
-        // 4. Lấy event
-        Matcher eventMatcher = Pattern
-                .compile("\"event\"\\s*:\\s*\"([^\"]*)\"")
-                .matcher(json);
+        String event = getString(json, "event");
+        String user = getString(json, "user");
+        String ok = getBoolean(json, "ok") ? "1" : "0";
 
-        eventMatcher.find();
-        String event = eventMatcher.group(1);
-
-        // 5. Lấy user
-        Matcher userMatcher = Pattern
-                .compile("\"user\"\\s*:\\s*\"([^\"]*)\"")
-                .matcher(json);
-
-        userMatcher.find();
-        String user = userMatcher.group(1);
-
-        // 6. Lấy ok
-        Matcher okMatcher = Pattern
-                .compile("\"ok\"\\s*:\\s*(true|false)")
-                .matcher(json);
-
-        okMatcher.find();
-
-        String ok = okMatcher.group(1).equals("true") ? "1" : "0";
-
-        // 7. Ghép đáp án
-        String result =
-                "event=" + event +
-                        ";user=" + user +
-                        ";ok=" + ok;
+        String result = "event=" + event + ";user=" + user + ";ok=" + ok;
 
         System.out.println("Result: " + result);
 
